@@ -1,0 +1,247 @@
+root@gnu13:~# systemctl restart networking
+root@gnu13:~# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.227.20.83  netmask 255.255.255.0  broadcast 10.227.20.255
+        inet6 fe80::221:5aff:fe5a:7d16  prefixlen 64  scopeid 0x20<link>
+        ether 00:21:5a:5a:7d:16  txqueuelen 1000  (Ethernet)
+        RX packets 234  bytes 15712 (15.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 63  bytes 8347 (8.1 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 17  
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 6  bytes 430 (430.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 6  bytes 430 (430.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@gnu13:~# ifconfig eth1 up
+root@gnu13:~# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.227.20.83  netmask 255.255.255.0  broadcast 10.227.20.255
+        inet6 fe80::221:5aff:fe5a:7d16  prefixlen 64  scopeid 0x20<link>
+        ether 00:21:5a:5a:7d:16  txqueuelen 1000  (Ethernet)
+        RX packets 234  bytes 15712 (15.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 67  bytes 8613 (8.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 17  
+
+eth1: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        ether 00:08:54:71:73:c6  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 7  bytes 534 (534.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7  bytes 534 (534.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@gnu13:~# ifconfig eth1 172.16.10.1/24
+root@gnu13:~# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.227.20.83  netmask 255.255.255.0  broadcast 10.227.20.255
+        inet6 fe80::221:5aff:fe5a:7d16  prefixlen 64  scopeid 0x20<link>
+        ether 00:21:5a:5a:7d:16  txqueuelen 1000  (Ethernet)
+        RX packets 339  bytes 22652 (22.1 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 68  bytes 8687 (8.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 17  
+
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.16.10.1  netmask 255.255.255.0  broadcast 172.16.10.255
+        inet6 fe80::208:54ff:fe71:73c6  prefixlen 64  scopeid 0x20<link>
+        ether 00:08:54:71:73:c6  txqueuelen 1000  (Ethernet)
+        RX packets 8  bytes 480 (480.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 22  bytes 3164 (3.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 7  bytes 534 (534.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7  bytes 534 (534.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@gnu13:~# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.227.20.83  netmask 255.255.255.0  broadcast 10.227.20.255
+        inet6 fe80::221:5aff:fe5a:7d16  prefixlen 64  scopeid 0x20<link>
+        ether 00:21:5a:5a:7d:16  txqueuelen 1000  (Ethernet)
+        RX packets 78477  bytes 5056465 (4.8 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 98  bytes 10917 (10.6 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 17  
+
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.16.10.1  netmask 255.255.255.0  broadcast 172.16.10.255
+        inet6 fe80::208:54ff:fe71:73c6  prefixlen 64  scopeid 0x20<link>
+        ether 00:08:54:71:73:c6  txqueuelen 1000  (Ethernet)
+        RX packets 426  bytes 45324 (44.2 KiB)
+        RX errors 0  dropped 102  overruns 0  frame 0
+        TX packets 56  bytes 6198 (6.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 7  bytes 534 (534.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7  bytes 534 (534.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@gnu13:~# systemctl restart networking
+root@gnu13:~# ifconfig
+eth0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 10.227.20.83  netmask 255.255.255.0  broadcast 10.227.20.255
+        ether 00:21:5a:5a:7d:16  txqueuelen 1000  (Ethernet)
+        RX packets 78621  bytes 5065857 (4.8 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 99  bytes 10981 (10.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 17  
+
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.16.10.1  netmask 255.255.255.0  broadcast 172.16.10.255
+        inet6 fe80::208:54ff:fe71:73c6  prefixlen 64  scopeid 0x20<link>
+        ether 00:08:54:71:73:c6  txqueuelen 1000  (Ethernet)
+        RX packets 426  bytes 45324 (44.2 KiB)
+        RX errors 0  dropped 102  overruns 0  frame 0
+        TX packets 56  bytes 6198 (6.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 7  bytes 534 (534.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7  bytes 534 (534.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@gnu13:~# ipconfig eth1 up
+bash: ipconfig: command not found
+root@gnu13:~# ifconfig eth1 up
+root@gnu13:~# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.227.20.83  netmask 255.255.255.0  broadcast 10.227.20.255
+        inet6 fe80::221:5aff:fe5a:7d16  prefixlen 64  scopeid 0x20<link>
+        ether 00:21:5a:5a:7d:16  txqueuelen 1000  (Ethernet)
+        RX packets 79461  bytes 5120277 (4.8 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 127  bytes 14831 (14.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 17  
+
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.16.10.1  netmask 255.255.255.0  broadcast 172.16.10.255
+        inet6 fe80::208:54ff:fe71:73c6  prefixlen 64  scopeid 0x20<link>
+        ether 00:08:54:71:73:c6  txqueuelen 1000  (Ethernet)
+        RX packets 430  bytes 45854 (44.7 KiB)
+        RX errors 0  dropped 104  overruns 0  frame 0
+        TX packets 56  bytes 6198 (6.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 7  bytes 534 (534.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7  bytes 534 (534.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@gnu13:~# ifconfig eth1 172.16.10.1
+root@gnu13:~# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.227.20.83  netmask 255.255.255.0  broadcast 10.227.20.255
+        inet6 fe80::221:5aff:fe5a:7d16  prefixlen 64  scopeid 0x20<link>
+        ether 00:21:5a:5a:7d:16  txqueuelen 1000  (Ethernet)
+        RX packets 81104  bytes 5226334 (4.9 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 128  bytes 14905 (14.5 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 17  
+
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.16.10.1  netmask 255.255.255.0  broadcast 172.16.10.255
+        inet6 fe80::208:54ff:fe71:73c6  prefixlen 64  scopeid 0x20<link>
+        ether 00:08:54:71:73:c6  txqueuelen 1000  (Ethernet)
+        RX packets 434  bytes 46384 (45.2 KiB)
+        RX errors 0  dropped 106  overruns 0  frame 0
+        TX packets 56  bytes 6198 (6.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 7  bytes 534 (534.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7  bytes 534 (534.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@gnu13:~# arp -d 172.16.10.254
+root@gnu13:~# ping 172.16.10.254
+PING 172.16.10.254 (172.16.10.254) 56(84) bytes of data.
+64 bytes from 172.16.10.254: icmp_seq=1 ttl=64 time=0.174 ms
+64 bytes from 172.16.10.254: icmp_seq=2 ttl=64 time=0.083 ms
+64 bytes from 172.16.10.254: icmp_seq=3 ttl=64 time=0.112 ms
+64 bytes from 172.16.10.254: icmp_seq=4 ttl=64 time=0.090 ms
+64 bytes from 172.16.10.254: icmp_seq=5 ttl=64 time=0.083 ms
+64 bytes from 172.16.10.254: icmp_seq=6 ttl=64 time=0.071 ms
+^C
+--- 172.16.10.254 ping statistics ---
+6 packets transmitted, 6 received, 0% packet loss, time 119ms
+rtt min/avg/max/mdev = 0.071/0.102/0.174/0.034 ms
+root@gnu13:~# arp -a
+? (172.16.10.254) at 00:c0:df:08:d5:b0 [ether] on eth1
+? (10.227.20.254) at e4:8d:8c:20:25:c8 [ether] on eth0
+root@gnu13:~# arp -d 172.16.10.254/24
+172.16.10.254/24: Unknown host
+root@gnu13:~# arp -a
+? (172.16.10.254) at 00:c0:df:08:d5:b0 [ether] on eth1
+? (10.227.20.254) at e4:8d:8c:20:25:c8 [ether] on eth0
+root@gnu13:~# arp -a
+? (172.16.10.254) at 00:c0:df:08:d5:b0 [ether] on eth1
+? (10.227.20.254) at e4:8d:8c:20:25:c8 [ether] on eth0
+root@gnu13:~# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.227.20.254   0.0.0.0         UG    0      0        0 eth0
+10.227.20.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+172.16.10.0     0.0.0.0         255.255.255.0   U     0      0        0 eth1
+root@gnu13:~# sudo arp -d 172.16.10.254/24
+172.16.10.254/24: Unknown host
+root@gnu13:~# sudo arp -d 172.16.10.254
+root@gnu13:~# arp -a
+? (10.227.20.254) at e4:8d:8c:20:25:c8 [ether] on eth0
+root@gnu13:~# ping 172.16.10.254
+PING 172.16.10.254 (172.16.10.254) 56(84) bytes of data.
+64 bytes from 172.16.10.254: icmp_seq=1 ttl=64 time=0.185 ms
+64 bytes from 172.16.10.254: icmp_seq=2 ttl=64 time=0.124 ms
+64 bytes from 172.16.10.254: icmp_seq=3 ttl=64 time=0.123 ms
+64 bytes from 172.16.10.254: icmp_seq=4 ttl=64 time=0.115 ms
+64 bytes from 172.16.10.254: icmp_seq=5 ttl=64 time=0.098 ms
+64 bytes from 172.16.10.254: icmp_seq=6 ttl=64 time=0.099 ms
+64 bytes from 172.16.10.254: icmp_seq=7 ttl=64 time=0.125 ms
+^C
+--- 172.16.10.254 ping statistics ---
+7 packets transmitted, 7 received, 0% packet loss, time 151ms
+rtt min/avg/max/mdev = 0.098/0.124/0.185/0.027 ms
