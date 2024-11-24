@@ -60,11 +60,13 @@ int createSocket() {
 }
 
 void connectToServer(int sockfd, struct sockaddr_in *server_addr) {
+    printf("A\n");
     if (connect(sockfd, (struct sockaddr *)server_addr, sizeof(struct sockaddr_in)) < 0) {
         perror("connect()");
         close(sockfd);
         exit(EXIT_FAILURE);
     }
+    printf("B\n");
 }
 
 void sendMessage(int sockfd, const char *message) {
@@ -116,11 +118,16 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     
+    printf("1\n");
     int control_sockfd;
     struct sockaddr_in server_addr;
+    printf("2\n");
     initServerAddress(&server_addr);
+    printf("3\n");
     control_sockfd = createSocket();
+    printf("4\n");
     connectToServer(control_sockfd, &server_addr);
+    printf("5\n");
 
     // Login
     char command[BUFFER_SIZE];
