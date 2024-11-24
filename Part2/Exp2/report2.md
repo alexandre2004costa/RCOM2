@@ -37,7 +37,9 @@ AAAA
 7. In tuxY3, ping tuxY4 and then ping tuxY2
 
 ```c
+root@gnu13:~# ping -b 172.16.10.254 #Tux14  -> Normal
 
+root@gnu13:~# ping -b 172.16.11.1 #Tux12 -> No conection
 ```
 
 8. Stop the capture and save the log
@@ -49,7 +51,7 @@ AAAA
 10. In tuxY3, do ping broadcast for a few seconds
 
 ```c
-ping -b 172.16.Y0.255
+root@gnu13:~# ping -b 172.16.10.255
 ```
 
 11. Observe the results, stop the captures and save the logs
@@ -63,7 +65,7 @@ ping -b 172.16.Y0.255
 12. Repeat steps 7, 8 and 9, but now do ping broadcast in tuxY2 
 
 ```c
-ping -b 172.16.Y1.255
+root@gnu12:~# ping -b 172.16.11.255
 ```
 
 ![WireShark Screenshot Step 10 - tux ](.png)

@@ -36,6 +36,8 @@ eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 3. Register the IP and MAC addresses of the network interfaces
 
+AAAAAAAAAAAAAAAAA
+
 4. Use ping command to verify connectivity between these computers
 
 ```c
@@ -62,7 +64,7 @@ root@gnu13:~# arp -a
 6. Delete ARP table entries in tuxY3 (arp -d ipaddress)
 
 ```c
-root@gnu13:~# sudo arp -d 172.16.10.254
+root@gnu13:~# sudo arp -d 172.16.10.254   # Empty
 ```
 
 7. Start Wireshark in tuxY3.eth1 and start capturing packets
