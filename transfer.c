@@ -18,7 +18,7 @@ int parseURL(const char *url, char *protocol, char *user, char *password, char *
     if (strchr(url, '@') != NULL) { // We have user and password
         int result = sscanf(url, "%[^:]://%[^:]:%[^@]@%[^/]/%s", protocol, user, password, host, path);
         if (result < 5) {
-            printf(stderr, "Error in credentials.\n");
+            printf("Error in credentials.\n");
             return 1;
         }
     } else { // Anonymmous url
@@ -26,7 +26,7 @@ int parseURL(const char *url, char *protocol, char *user, char *password, char *
         strcpy(password, "anonymous");
         int result = sscanf(url, "%[^:]://%[^/]%s", protocol, host, path);
         if (result < 3) {
-            printf(stderr, "Error in anonymous credentials.\n");
+            printf("Error in anonymous credentials.\n");
             return 1;
         }
     }
@@ -76,14 +76,53 @@ void sendMessage(int sockfd, const char *message) {
 }
 
 int readMessage(int sockfd, char *response, size_t size) {
-    bzero(response, size);
-    if (read(sockfd, response, size - 1) < 0) {
-        perror("Error reading from socket");
-        exit(EXIT_FAILURE);
+    bzero(response, size); 
+    char buffer[1];
+    int pos = 0;
+    State state = Initial;
+    printf("AQUI\n");
+    while (state != End) {
+        printf("AQUI\n");
+        ssize_t bytesRead = read(sockfd, buffer, 1);
+                printf("AQU22I\n");
+
+        printf("Received byte: %c (0x%02X)\n", buffer[0], (unsigned char)buffer[0]);
+
+
+        if (bytesRead < 0) {
+            printf("Error reading from socket");
+            exit(EXIT_FAILURE);
+            return 1;
+        }
+        
+        response[pos++] = buffer[0];
+
+        switch (buffer[0])
+        {
+            case ' ':
+                if (state == Numbers) state = Last;
+                else if (state == Initial) state = Line;
+                break;
+
+            case '-':
+                if(state == Numbers) state = Line;
+                break;
+            
+            case '\n':
+                if (state == Last || state == Initial) state = End;
+                else state = Initial;
+            
+            default:
+                if (state == Initial && buffer[0] >= '0' && buffer[0] <= '9') state = Numbers;
+                break;
+        }        
+       
+
     }
-    printf("Response: %s\n", response);
+
     int statusCode = 0;
     sscanf(response, "%3d", &statusCode);
+    printf("Response: %s\n", response);
     return statusCode;
 }
 
@@ -117,7 +156,7 @@ int main(int argc, char *argv[]) {
     char *ip = malloc(INET_ADDRSTRLEN * sizeof(char));
 
     if (argc != 2 || parseURL(argv[1], protocol, user, password, host, path) != 0) {
-        printf(stderr, "Write in format: %s ftp://[<user>:<password>@]<host>/<url-path>\n", argv[0]);
+        printf("Write in format: %s ftp://[<user>:<password>@]<host>/<url-path>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -134,7 +173,7 @@ int main(int argc, char *argv[]) {
     connectToServer(control_sockfd, &server_addr);
     printf("Connected to server !\n");
 
-    sleep(1);
+    
     if (readMessage(control_sockfd, response, BUFFER_SIZE) != LogIn){
         printf("Error trying to log in the server. \n");
         exit(EXIT_FAILURE);
@@ -142,31 +181,30 @@ int main(int argc, char *argv[]) {
 
     // Login
     char command[BUFFER_SIZE];
-    snprintf(command, BUFFER_SIZE, "user %s\n", user);
+    snprintf(command, BUFFER_SIZE + 10, "user %s\n", user);
     sendMessage(control_sockfd, command);
 
-    sleep(1);
+    
     if (readMessage(control_sockfd, response, BUFFER_SIZE) != NeedPassword){
         printf("Error trying to send user name. \n");
         exit(EXIT_FAILURE);
     }
 
 
-    snprintf(command, BUFFER_SIZE, "pass %s\n", password);
+    snprintf(command, BUFFER_SIZE + 10, "pass %s\n", password);
     sendMessage(control_sockfd, command);
 
-    sleep(1);
+    
     if (readMessage(control_sockfd, response, BUFFER_SIZE) != UserIn){
         printf("Error trying to send password. \n");
         exit(EXIT_FAILURE);
     }
 
-
     // Enter passive mode
     snprintf(command, BUFFER_SIZE, "pasv\n");
     sendMessage(control_sockfd, command);
     
-    sleep(1);
+    
     if (readMessage(control_sockfd, response, BUFFER_SIZE) != EnterPassive){
         printf("Error trying to enter passive mode. \n");
         exit(EXIT_FAILURE);
@@ -181,10 +219,10 @@ int main(int argc, char *argv[]) {
     data_addr.sin_port = htons(newPort);
     connectToServer(data_sockfd, &data_addr);
 
-    snprintf(command, BUFFER_SIZE, "retr %s\n", path);
+    snprintf(command, BUFFER_SIZE + 10, "retr %s\n", path);
     sendMessage(control_sockfd, command);
 
-    sleep(1);
+    
     if (readMessage(control_sockfd, response, BUFFER_SIZE) != FileOkay){
         printf("Error trying to start receiving file. \n");
         exit(EXIT_FAILURE);
@@ -206,9 +244,9 @@ int main(int argc, char *argv[]) {
     }
 
     fclose(f);
-    sleep(1);
+    
     if (readMessage(control_sockfd, response, BUFFER_SIZE) != CloseConnection){
-        printf("Error trying to close connection. \n");
+        printf("Error in closing connection. \n");
         exit(EXIT_FAILURE);
     }
 
@@ -217,9 +255,10 @@ int main(int argc, char *argv[]) {
     // Close control connection
     snprintf(command, BUFFER_SIZE, "quit\n");
     sendMessage(control_sockfd, command);
-    readMessage(control_sockfd, response, BUFFER_SIZE);
-    printf("Response: %s\n", response);
-
+    if (readMessage(control_sockfd, response, BUFFER_SIZE)!= Bye){
+        printf("Error trying to end. \n");
+        exit(EXIT_FAILURE);
+    }
     closeSocket(control_sockfd);
 
     printf("File downloaded successfully!\n");

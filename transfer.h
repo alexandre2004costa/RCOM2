@@ -15,6 +15,15 @@
 #define FileOkay 150
 #define EnterPassive 227
 #define LogIn 220
+#define Bye 221
+
+typedef enum {
+    Initial,
+    Line,
+    Last,
+    End,
+    Numbers
+} State;
 
 int getIp(char host[], char* ip);
 
