@@ -80,17 +80,14 @@ int readMessage(int sockfd, char *response, size_t size) {
     char buffer[1];
     int pos = 0;
     State state = Initial;
-    printf("AQUI\n");
     while (state != End) {
-        printf("AQUI\n");
         ssize_t bytesRead = read(sockfd, buffer, 1);
-                printf("AQU22I\n");
 
-        printf("Received byte: %c (0x%02X)\n", buffer[0], (unsigned char)buffer[0]);
+        //printf("Received byte: %c (0x%02X)\n", buffer[0], (unsigned char)buffer[0]);
 
 
         if (bytesRead < 0) {
-            printf("Error reading from socket");
+            printf("Error reading from socket\n");
             exit(EXIT_FAILURE);
             return 1;
         }
@@ -181,7 +178,7 @@ int main(int argc, char *argv[]) {
 
     // Login
     char command[BUFFER_SIZE];
-    snprintf(command, BUFFER_SIZE + 10, "user %s\n", user);
+    snprintf(command, BUFFER_SIZE + 10, "user %s\r\n", user);
     sendMessage(control_sockfd, command);
 
     
@@ -191,7 +188,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    snprintf(command, BUFFER_SIZE + 10, "pass %s\n", password);
+    snprintf(command, BUFFER_SIZE + 10, "pass %s\r\n", password);
     sendMessage(control_sockfd, command);
 
     
@@ -201,7 +198,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Enter passive mode
-    snprintf(command, BUFFER_SIZE, "pasv\n");
+    snprintf(command, BUFFER_SIZE, "pasv\r\n");
     sendMessage(control_sockfd, command);
     
     
@@ -219,11 +216,12 @@ int main(int argc, char *argv[]) {
     data_addr.sin_port = htons(newPort);
     connectToServer(data_sockfd, &data_addr);
 
-    snprintf(command, BUFFER_SIZE + 10, "retr %s\n", path);
+    snprintf(command, BUFFER_SIZE + 10, "retr %s\r\n", path);
     sendMessage(control_sockfd, command);
 
     
-    if (readMessage(control_sockfd, response, BUFFER_SIZE) != FileOkay){
+    int control = readMessage(control_sockfd, response, BUFFER_SIZE);
+    if ( control != FileOkay && control != FileOkay2){
         printf("Error trying to start receiving file. \n");
         exit(EXIT_FAILURE);
     }
@@ -253,7 +251,7 @@ int main(int argc, char *argv[]) {
     closeSocket(data_sockfd);
 
     // Close control connection
-    snprintf(command, BUFFER_SIZE, "quit\n");
+    snprintf(command, BUFFER_SIZE, "quit\r\n");
     sendMessage(control_sockfd, command);
     if (readMessage(control_sockfd, response, BUFFER_SIZE)!= Bye){
         printf("Error trying to end. \n");

@@ -13,6 +13,7 @@
 #define UserIn 230
 #define NeedPassword 331
 #define FileOkay 150
+#define FileOkay2 125
 #define EnterPassive 227
 #define LogIn 220
 #define Bye 221
