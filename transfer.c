@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include<arpa/inet.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <string.h>
-
-#define SERVER_PORT 21
-#define BUFFER_SIZE 1024
+#include "transfer.h"
 
 int getIp(char host[], char* ip){
     struct hostent *h;
@@ -28,7 +18,7 @@ int parseURL(const char *url, char *protocol, char *user, char *password, char *
     if (strchr(url, '@') != NULL) { // We have user and password
         int result = sscanf(url, "%[^:]://%[^:]:%[^@]@%[^/]/%s", protocol, user, password, host, path);
         if (result < 5) {
-            printf(stderr, "Error in credentials.\n");
+            printf("Error in credentials.\n");
             return 1;
         }
     } else { // Anonymmous url
@@ -36,7 +26,7 @@ int parseURL(const char *url, char *protocol, char *user, char *password, char *
         strcpy(password, "anonymous");
         int result = sscanf(url, "%[^:]://%[^/]%s", protocol, host, path);
         if (result < 3) {
-            printf(stderr, "Error in anonymous credentials.\n");
+            printf("Error in anonymous credentials.\n");
             return 1;
         }
     }
@@ -66,7 +56,6 @@ int createSocket() {
 }
 
 void connectToServer(int sockfd, struct sockaddr_in *server_addr) {
-    printf("AQUI\n");
     if (connect(sockfd, (struct sockaddr *)server_addr, sizeof(struct sockaddr_in)) < 0) {
         perror("connect()");
         close(sockfd);
@@ -86,12 +75,52 @@ void sendMessage(int sockfd, const char *message) {
     }
 }
 
-void readMessage(int sockfd, char *response, size_t size) {
-    bzero(response, size);
-    if (read(sockfd, response, size - 1) < 0) {
-        perror("Error reading from socket");
-        exit(EXIT_FAILURE);
+int readMessage(int sockfd, char *response, size_t size) {
+    bzero(response, size); 
+    char buffer[1];
+    int pos = 0;
+    State state = Initial;
+    while (state != End) {
+        ssize_t bytesRead = read(sockfd, buffer, 1);
+
+        //printf("Received byte: %c (0x%02X)\n", buffer[0], (unsigned char)buffer[0]);
+
+
+        if (bytesRead < 0) {
+            printf("Error reading from socket\n");
+            exit(EXIT_FAILURE);
+            return 1;
+        }
+        
+        response[pos++] = buffer[0];
+
+        switch (buffer[0])
+        {
+            case ' ':
+                if (state == Numbers) state = Last;
+                else if (state == Initial) state = Line;
+                break;
+
+            case '-':
+                if(state == Numbers) state = Line;
+                break;
+            
+            case '\n':
+                if (state == Last || state == Initial) state = End;
+                else state = Initial;
+            
+            default:
+                if (state == Initial && buffer[0] >= '0' && buffer[0] <= '9') state = Numbers;
+                break;
+        }        
+       
+
     }
+
+    int statusCode = 0;
+    sscanf(response, "%3d", &statusCode);
+    printf("Response: %s\n", response);
+    return statusCode;
 }
 
 void closeSocket(int sockfd) {
@@ -101,11 +130,20 @@ void closeSocket(int sockfd) {
     }
 }
 
-void parsePASVResponse(char *response, char *ip, int *port) { // CHAT GPT nao sei oq é isto
+void parsePASVResponse(char *response, char *ip, int *port) {
     int h1, h2, h3, h4, p1, p2;
     sscanf(response, "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d)", &h1, &h2, &h3, &h4, &p1, &p2);
     sprintf(ip, "%d.%d.%d.%d", h1, h2, h3, h4);
     *port = p1 * 256 + p2;
+}
+
+void extractFilename(const char *path, char *filename) {
+    const char *lastSlash = strrchr(path, '/');
+    if (lastSlash != NULL) {
+        strcpy(filename, lastSlash + 1);
+    } else {
+        strcpy(filename, path);
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -115,7 +153,7 @@ int main(int argc, char *argv[]) {
     char *ip = malloc(INET_ADDRSTRLEN * sizeof(char));
 
     if (argc != 2 || parseURL(argv[1], protocol, user, password, host, path) != 0) {
-        printf(stderr, "Write in format: %s ftp://[<user>:<password>@]<host>/<url-path>\n", argv[0]);
+        printf("Write in format: %s ftp://[<user>:<password>@]<host>/<url-path>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -128,41 +166,46 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in server_addr;
     initServerAddress(&server_addr, ip); 
     control_sockfd = createSocket();
-    printf("%i\n", control_sockfd);
-    printf("Socket file descriptor: %d\n", control_sockfd);
-    printf("Server IP: %s\n", inet_ntoa(server_addr.sin_addr)); // Converte o endereço para string
-    printf("Server Port: %d\n", ntohs(server_addr.sin_port));   // Converte porta para formato legível
+
     connectToServer(control_sockfd, &server_addr);
     printf("Connected to server !\n");
 
-    sleep(1);
-    readMessage(control_sockfd, response, BUFFER_SIZE);
-    printf("Response: %s\n", response);
+    
+    if (readMessage(control_sockfd, response, BUFFER_SIZE) != LogIn){
+        printf("Error trying to log in the server. \n");
+        exit(EXIT_FAILURE);
+    }
 
     // Login
     char command[BUFFER_SIZE];
-    snprintf(command, BUFFER_SIZE, "user %s\n", user);
+    snprintf(command, BUFFER_SIZE + 10, "user %s\r\n", user);
     sendMessage(control_sockfd, command);
 
-    sleep(1);
-    readMessage(control_sockfd, response, BUFFER_SIZE);
-    printf("Response: %s\n", response);
+    
+    if (readMessage(control_sockfd, response, BUFFER_SIZE) != NeedPassword){
+        printf("Error trying to send user name. \n");
+        exit(EXIT_FAILURE);
+    }
 
 
-    snprintf(command, BUFFER_SIZE, "pass %s\n", password);
+    snprintf(command, BUFFER_SIZE + 10, "pass %s\r\n", password);
     sendMessage(control_sockfd, command);
 
-    sleep(1);
-    readMessage(control_sockfd, response, BUFFER_SIZE);
-    printf("Response: %s\n", response);
+    
+    if (readMessage(control_sockfd, response, BUFFER_SIZE) != UserIn){
+        printf("Error trying to send password. \n");
+        exit(EXIT_FAILURE);
+    }
 
     // Enter passive mode
-    snprintf(command, BUFFER_SIZE, "pasv\n");
+    snprintf(command, BUFFER_SIZE, "pasv\r\n");
     sendMessage(control_sockfd, command);
     
-    sleep(1);
-    readMessage(control_sockfd, response, BUFFER_SIZE);
-    printf("Response: %s\n", response);
+    
+    if (readMessage(control_sockfd, response, BUFFER_SIZE) != EnterPassive){
+        printf("Error trying to enter passive mode. \n");
+        exit(EXIT_FAILURE);
+    }
 
     int newPort;
     parsePASVResponse(response, passiveIp, &newPort);
@@ -173,14 +216,22 @@ int main(int argc, char *argv[]) {
     data_addr.sin_port = htons(newPort);
     connectToServer(data_sockfd, &data_addr);
 
-    snprintf(command, BUFFER_SIZE, "retr %s\n", path);
+    snprintf(command, BUFFER_SIZE + 10, "retr %s\r\n", path);
     sendMessage(control_sockfd, command);
-    readMessage(control_sockfd, response, BUFFER_SIZE);
-    printf("Response: %s\n", response);
 
-    FILE *f = fopen("result", "wb");
+    
+    int control = readMessage(control_sockfd, response, BUFFER_SIZE);
+    if ( control != FileOkay && control != FileOkay2){
+        printf("Error trying to start receiving file. \n");
+        exit(EXIT_FAILURE);
+    }
+
+    char filename[256];
+    extractFilename(path, filename);
+
+    FILE *f = fopen(filename, "wb");
     if (!f) {
-        perror("Error opening file");
+        printf("Error opening file");
         exit(EXIT_FAILURE);
     }
 
@@ -191,14 +242,21 @@ int main(int argc, char *argv[]) {
     }
 
     fclose(f);
+    
+    if (readMessage(control_sockfd, response, BUFFER_SIZE) != CloseConnection){
+        printf("Error in closing connection. \n");
+        exit(EXIT_FAILURE);
+    }
+
     closeSocket(data_sockfd);
 
     // Close control connection
-    snprintf(command, BUFFER_SIZE, "quit\n");
+    snprintf(command, BUFFER_SIZE, "quit\r\n");
     sendMessage(control_sockfd, command);
-    readMessage(control_sockfd, response, BUFFER_SIZE);
-    printf("Response: %s\n", response);
-
+    if (readMessage(control_sockfd, response, BUFFER_SIZE)!= Bye){
+        printf("Error trying to end. \n");
+        exit(EXIT_FAILURE);
+    }
     closeSocket(control_sockfd);
 
     printf("File downloaded successfully!\n");
