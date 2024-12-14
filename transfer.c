@@ -82,10 +82,6 @@ int readMessage(int sockfd, char *response, size_t size) {
     State state = Initial;
     while (state != End) {
         ssize_t bytesRead = read(sockfd, buffer, 1);
-
-        //printf("Received byte: %c (0x%02X)\n", buffer[0], (unsigned char)buffer[0]);
-
-
         if (bytesRead < 0) {
             printf("Error reading from socket\n");
             exit(EXIT_FAILURE);
@@ -113,8 +109,6 @@ int readMessage(int sockfd, char *response, size_t size) {
                 if (state == Initial && buffer[0] >= '0' && buffer[0] <= '9') state = Numbers;
                 break;
         }        
-       
-
     }
 
     int statusCode = 0;
