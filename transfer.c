@@ -236,13 +236,12 @@ int main(int argc, char *argv[]) {
     }
 
     fclose(f);
+    closeSocket(data_sockfd);
     
     if (readMessage(control_sockfd, response, BUFFER_SIZE) != CloseConnection){
         printf("Error in closing connection. \n");
         exit(EXIT_FAILURE);
     }
-
-    closeSocket(data_sockfd);
 
     // Close control connection
     snprintf(command, BUFFER_SIZE, "quit\r\n");
